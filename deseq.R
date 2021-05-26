@@ -1,7 +1,6 @@
 library(Biobase)
 library("DESeq2")
 library(ggplot2)
-library(bigmemory)
 
 wd <- getwd()
 setwd("./..")
@@ -9,7 +8,7 @@ setwd("./..")
 this <- read.csv("protect/tsv/SRR6467548/abundance.tsv", sep = "\t")
 metadata <- read.csv("protect/SraRunTable.txt")
 
-tsv_matrix <- big.matrix(nrow = 199240, ncol = 226, init = 0, backingfile = "tsv_matrix.bin", descriptorfile = "tsv_matrix.desc")
+tsv_matrix <- matrix(, nrow = 199240, ncol = 226)
 
 tsv_folder <- "protect/tsv"
 tsv_subfolders <- list.dirs(tsv_folder, recursive = TRUE)[-1]
@@ -26,6 +25,8 @@ for (abundance in abundances) {
   patient <- patient + 1
   gene <- 1
 }
+
+write.csv(tsv_matrix, "tpm_table.csv")
 
 #dds <- DESeqDataSetFromMatrix(countData=this,colData=metadata,design=~dex,tidy = TRUE)
 
