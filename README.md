@@ -1,8 +1,8 @@
 # ibd
 
-Identifying Patterns of Metabolic Dysfunction in the Pathogenesis of IBD
+__Identifying__ Patterns of Metabolic Dysfunction in the Pathogenesis of IBD__
 
-Progress Log:
+__Progress Log:__
 
 2/12/21 - sorted out patient data and looked at basic metadata.
 
@@ -18,3 +18,10 @@ Progress Log:
 			54 control
 			92 crohn's disease
 			42 ulcerative colitis
+
+4/20/21 - explored rivanna and tested bash, slurm scripts.
+
+5/26/21 - imported kallisto abundance results view in R.
+
+6/2/21 - set up sleuth package in R.
+
