@@ -1,6 +1,6 @@
 # ibd
 
-__Identifying__ Patterns of Metabolic Dysfunction in the Pathogenesis of IBD__
+__Identifying Patterns of Metabolic Dysfunction in the Pathogenesis of IBD__
 
 __Progress Log:__
 
@@ -21,7 +21,7 @@ __Progress Log:__
 
 4/20/21 - explored rivanna and tested bash, slurm scripts.
 
-5/26/21 - imported kallisto abundance results view in R.
+5/26/21 - imported kallisto abundance results to view in R.
 
 6/2/21 - set up sleuth package in R.
 
