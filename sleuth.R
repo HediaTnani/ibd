@@ -5,14 +5,13 @@ library(biomaRt)
 library(dplyr)
 
 wd <- getwd()
-setwd("./..")
+# setwd("./..")
 
-this <- read.csv("protect/tsv/SRR6467548/abundance.tsv", sep = "\t")
-metadata <- read.csv("protect/SraRunTable.txt")
-metadata <- select(metadata, c('Run', 'age_at_diagnosis', 'Diagnosis', 'initial_treatment', 'PUCAI', 'sex', 'total_mayo_score', 'week_4_remission', 'histology_severity_score', 'week_4_calprotectin', 'baseline_calprotectin'))
+metadata <- read.csv("../protect/SraRunTable.txt")
+metadata <- select(metadata, c('Run', 'Diagnosis', 'sex'))
 metadata <- rename(metadata, sample = Run)
 
-tsv_folder <- "protect/tsv"
+tsv_folder <- "../protect/tsv"
 tsv_subfolders <- list.dirs(tsv_folder, recursive = TRUE)[-1]
 abundances_tsv <- file.path(tsv_subfolders, "abundance.tsv")
 abundances_h5 <- file.path(tsv_subfolders, "abundance.h5")
