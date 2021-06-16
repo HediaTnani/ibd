@@ -112,5 +112,8 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
 
         sol = model.optimize()
 
-        return model, sol
+        print(coefficients)
+        print(rxn_profile)
+
+        return model, sol, coefficients
 

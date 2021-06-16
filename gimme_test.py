@@ -14,7 +14,7 @@ model = create_test_model()
 
 # create a dataframe containing simulated trancript abundances
 num_genes = len(model.genes)
-num_samples = 10
+num_samples = 1
 # driven expects a table of genes (rows) x samples (columns):
 transcript_df = pandas.DataFrame(numpy.random.randint(low=0,high=100,size=(num_genes,num_samples)))
 transcript_df.index = [gene.id for gene in model.genes]
@@ -65,14 +65,15 @@ gimme_solutions = {}
 count = 0
 with model:
     for sample in transcript_df.columns:
-        constrained_model,gimme_solution = gimme_mod(model,
+        constrained_model,gimme_solution,coefficients = gimme_mod(model,
                                                       exp_prof,
                                                       condition=sample,
                                                       cutoff = 1.0,
                                                       fraction_of_optimum = 0.1,
                                                       max_penalty=1.0)
-        print(gimme_solution.fluxes)
-        print(str(gimme_solution.objective_value))
+        # print(gimme_solution.fluxes)
+        # print(str(gimme_solution.objective_value))
+        # print(coefficients)
         gimme_solutions[count] = gimme_solution
         count = count+1
 
