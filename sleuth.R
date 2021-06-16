@@ -37,23 +37,5 @@ so <- sleuth_lrt(so, 'reduced', 'full')
 sleuth_table_gene <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
 sleuth_table_gene <- filter(sleuth_table_gene, qval <= 0.05)
 
-
-
-# tsv_matrix <- matrix(, nrow = 199240, ncol = 226)
-
-# patient <- 1
-# gene <- 1
-# for (abundance in abundances_tsv) {
-#   tsv <- read.csv(abundance, sep = "\t")
-#   while (gene < 199240) {
-#     tsv_matrix[gene, patient] <- tsv[gene,5]
-#     gene <- gene + 1
-#   }
-#   patient <- patient + 1
-#   gene <- 1
-# }
-
-# write.csv(tsv_matrix, "tpm_table.csv")
-
 setwd(wd)
 
