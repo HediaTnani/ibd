@@ -71,19 +71,16 @@ with model:
                                                       cutoff = 1.0,
                                                       fraction_of_optimum = 0.1,
                                                       max_penalty=1.0)
-        #print(gimme_solution.fluxes)
+        print(gimme_solution.fluxes)
         print(str(gimme_solution.objective_value))
         gimme_solutions[count] = gimme_solution
         count = count+1
 
 # print the fluxes in the solution for the first sample
-#print(gimme_solutions[transcript_df.columns[0]].fluxes)
+# print(gimme_solutions[transcript_df.columns[0]].fluxes)
 
-#print(gimme_solutions[0].fluxes)
-#print(gimme_solutions[1].fluxes)
-
-#print('writing fluxes to csv...')
-#gimme_solutions.fluxes.to_csv('data/fluxes/fluxes.csv', sep = '\t')
+# print('writing fluxes to csv...')
+# gimme_solutions[transcript_df.columns[0]].fluxes.fluxes.to_csv('data/fluxes/fluxes.csv', sep = '\t')
 
 
 

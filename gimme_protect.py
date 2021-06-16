@@ -1,5 +1,4 @@
 import cobra
-from cobra.test import create_test_model
 import numpy
 import pandas
 
@@ -18,7 +17,8 @@ num_samples = 226
 
 # import transcript table
 print('importing transcript table...')
-transcript_df = pandas.read_csv('../tpm_table.csv', index_col=0, header=0)
+transcript_df = pandas.read_csv('../tpm_table_old.csv', index_col=0, header=0)
+transcript_id = pandas.read_csv('../tpm_table.csv', index_col=0, header=0)
 
 # make sure the index is string, not int, for integration with GIMME
 print('converting transcript indices...')
@@ -50,6 +50,8 @@ for sample,subdata in transcript_df.groupby(by=transcript_df.columns,axis=1):
 print('normalizing transcripts...')
 transcript_df = transcript_df.div(transcript_df.max(axis=1), axis=0)
 transcript_df.fillna(0, inplace=True)
+transcript_df.reindex(transcript_id.index)
+
 
 # create the expression profile object using Driven
 print('generating expression profile...')
