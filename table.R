@@ -12,6 +12,12 @@ this <- read.csv("../protect/tsv/SRR6467548/abundance.tsv", sep = "\t")
 transcript_ids = this[,1]
 transcript_ids <- sub("[.][0-9]*", "", transcript_ids)
 ttg = getBM(attributes = c('ensembl_transcript_id','ensembl_gene_id'), filters = "ensembl_transcript_id", values = transcript_ids, mart = mart)
+gene_ids = ttg$ensembl_gene_id
+
+tte = getBM(attributes = c('ensembl_transcript_id','ensembl_gene_id',"hgnc_symbol","entrezgene_id"), filters = "ensembl_gene_id", values = gene_ids, mart = mart)
+
+different.names <- (!tte$ensembl_transcript_id %in% ttg$ensembl_transcript_id)
+not.in.ttg <- tte[different.names]
 
 # metadata <- read.csv("../protect/SraRunTable.txt")
 # 
@@ -34,6 +40,8 @@ ttg = getBM(attributes = c('ensembl_transcript_id','ensembl_gene_id'), filters =
 #   gene <- 1
 # }
 
-rownames(tsv_matrix) <- ttg$ensembl_gene_id
+rownames(tsv_matrix) <- transcript_ids
 
-write.csv(tsv_matrix, "../tpm_table.csv")
+# tsv_matrix_rm <- tsv_matrix[grepl("^NA", rownames(df))==F,]
+
+write.csv(tsv_matrix, "../tpm_table_enst.csv")
