@@ -2,6 +2,9 @@ import cobra
 import numpy
 import pandas
 
+from sympy import Min, Max, Add, Mul, Symbol
+from sympy.parsing.ast_parser import parse_expr
+
 import driven
 from driven.data_sets import ExpressionProfile
 from optlang.symbolics import Zero
@@ -58,6 +61,9 @@ print('generating expression profile...')
 exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
                              conditions=transcript_df.columns.values,
                              expression=transcript_df.values)
+
+print(Symbol(model.genes[1].id))
+print(exp_prof.to_reaction_dict(0,model))
 
 # rename the genes to have a non-numeric character so they don't get evaluated prematurely by driven.
 # This is a problem with the AST parser that cobrapy uses to represent gene identifiers.
