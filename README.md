@@ -29,5 +29,5 @@ __Progress Log:__
 
 6/16/21 - commit local gimme prep
 
-6/17/21 - some gimme and driven debugging for test e. coli data. changed files for driven package are in driven/, gimme consistency scores are in data/consistency.txt, and fluxes for each sample are in fluxes/.
+6/17/21 - some gimme and driven debugging for test e. coli data. changed files for driven package are in driven/, gimme consistency scores are in data/consistency.txt, and fluxes for each sample are in data/fluxes/.
 
