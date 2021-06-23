@@ -25,3 +25,9 @@ __Progress Log:__
 
 6/2/21 - set up sleuth package in R.
 
+6/7/21 - took preliminary sleuth lrt tests and analysis on kallisto results. identified differentially expressed genes between control and ibd patients.
+
+6/16/21 - commit local gimme prep
+
+6/17/21 - some gimme and driven debugging for test e. coli data. changed files for driven package are in driven/, gimme consistency scores are in data/consistency.txt, and fluxes for each sample are in data/fluxes/.
+

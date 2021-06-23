@@ -2,6 +2,7 @@ import cobra
 from cobra.test import create_test_model
 import numpy
 import pandas
+import sympy
 
 import driven
 from driven.data_sets import ExpressionProfile
@@ -73,7 +74,7 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
         solution = model.slim_optimize() # returns the flux through the objective
         prob = model.problem # extracts the optimization problem
         rxn_profile = expression_profile.to_reaction_dict(condition, model)
-        
+
         if model.objective_direction == 'max':
             fix_obj_const = prob.Constraint(model.objective.expression,
                                             lb=fraction_of_optimum * solution,
@@ -88,7 +89,7 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
 
         coefficients = {rxn_id: cutoff - expression
                         for rxn_id, expression in iteritems(rxn_profile)
-                        if cutoff > expression}
+                        if expression is not None and cutoff > expression}
         
         obj_vars = []
         for rxn_id, coefficient in iteritems(coefficients):
@@ -106,14 +107,15 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
                 obj_vars.append((reaction.reverse_variable,max_penalty))
             
         model.objective = prob.Objective(Zero, sloppy=True, direction="min")
+
+        # print(model.objective)
         model.objective.set_linear_coefficients({v: c for v, c in obj_vars})
+
+        # print(model.objective)
 
         print('performing second optimization...')
 
         sol = model.optimize()
-
-        print(coefficients)
-        print(rxn_profile)
 
         return model, sol, coefficients
 
