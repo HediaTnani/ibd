@@ -3,11 +3,12 @@ library("sleuth")
 library(annotables)
 library(biomaRt)
 library(dplyr)
+library(ggplot2)
 
 wd <- getwd()
 # setwd("./..")
 
-# sleuth analysis
+## sleuth analysis
 
 metadata <- read.csv("../protect/SraRunTable.txt")
 metadata <- select(metadata, c('Run', 'Diagnosis', 'sex'))
@@ -35,26 +36,88 @@ so <- sleuth_fit(so, ~sex + Diagnosis, 'full')
 
 so <- sleuth_lrt(so, 'reduced', 'full')
 sleuth_table_lrt <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
-sleuth_table_lrt <- filter(sleuth_table_lrt, qval <= 0.05)
-
-pca <- plot_pca(so, color_by = 'Diagnosis')
+#sleuth_table_lrt <- filter(sleuth_table_lrt, qval <= 0.05)
 
 so$pval_aggregate <- FALSE
 
 so <- sleuth_wt(so, 'DiagnosisUlcerative Colitis', 'full')
 so <- sleuth_wt(so, 'sexmale', 'full')
 sleuth_table_wt <- sleuth_results(so, 'DiagnosisUlcerative Colitis', test_type='wt', which_model='full', show_all = FALSE)
-sleuth_table_wt <- filter(sleuth_table_wt, qval <= 0.05)
-
-volcano <- plot_volcano(so, 'DiagnosisUlcerative Colitis', test_type = 'wt', which_model = 'full', sig_level = 0.0000001, point_alpha = 0.2, sig_color = 'red', highlight = NULL)
+#sleuth_table_wt <- filter(sleuth_table_wt, qval <= 0.05)
 
 so$pval_aggregate <- TRUE
 
 sleuth_live(so)
 
-# figure generation
+## figure generation
 
+# volcano plot
+volcano_data <-  select(sleuth_table_wt, c("ext_gene","qval", "b"))
+volcano_data$log_qval <- -log10(volcano_data$qval)
 
+volcano_data$Legend <- cut(volcano_data$b, breaks = c(-Inf, -4.3, 4.3, Inf), labels = c("-", "0", "+"))
+count <- 1
+
+volcano_data$Legend <- as.character(volcano_data$Legend)
+for (i in volcano_data$Legend) {
+  if (volcano_data$log_qval[count] > 40) {
+    volcano_data$Legend[count] <- paste(i, "+", sep="")
+  } else {
+    volcano_data$Legend[count] <- paste(i, "-", sep="")
+  }
+  count <- count + 1
+}
+
+count <- 1
+for (i in volcano_data$Legend) {
+  if (i == "++") {
+    volcano_data$Legend[count] <- "significant positive"
+  } else if (i == "+-") {
+    volcano_data$Legend[count] <- "insignificant positive"
+  } else if (i == "0+") {
+    volcano_data$Legend[count] <- "significant neutral"
+  } else if (i == "0-") {
+    volcano_data$Legend[count] <- "insignificant neutral"
+  } else if (i == "-+") {
+    volcano_data$Legend[count] <- "signifcant negative"
+  } else if (i == "--") {
+    volcano_data$Legend[count] <- "insignificant negative"
+  }
+  count <- count + 1
+}
+
+volcano_data$Legend <- as.factor(volcano_data$Legend)
+
+volcano <- ggplot(volcano_data, aes(x=b, y=-log10(qval), color = Legend))
+
+volcano + 
+  geom_point(aes(alpha = 0.5)) +
+  geom_text(aes(label = ifelse(Legend == "significant positive", ext_gene, '')), hjust = 0, vjust = 0) +
+  geom_vline(xintercept = -4.3, linetype="dashed", size = 0.3) + 
+  geom_vline(xintercept = 4.3, linetype="dashed", size = 0.3) + 
+  geom_hline(yintercept = 40, linetype="dashed", size = 0.3) + 
+  ggtitle("Volcano Plot") + 
+  xlab("Log Fold Change") + 
+  ylab("Log Odds") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
+  theme(legend.position = "none")
+
+# pca plot
+
+pca <- plot_pca(so, color_by = 'Diagnosis', point_alpha = 0.5)
+
+pca +
+  ggtitle("Principal Component Analysis") + 
+  xlab("PC1 (62.07%)") + 
+  ylab("PC2 (17.01%)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+# pca variances plot
+
+pca_var <- plot_pc_variance(so, use_filtered = TRUE, units = "est_counts",
+                 pca_number = NULL, scale = FALSE, PC_relative = NULL)
 
 
 
