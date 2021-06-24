@@ -1,4 +1,5 @@
 library(Biobase)
+library(tximport)
 library("sleuth")
 library(annotables)
 library(biomaRt)
@@ -9,7 +10,7 @@ library(vegan)
 wd <- getwd()
 # setwd("./..")
 
-## sleuth analysis
+## import data
 
 metadata <- read.csv("../protect/SraRunTable.txt")
 metadata <- select(metadata, c('Run', 'Diagnosis', 'sex'))
@@ -20,15 +21,25 @@ tsv_subfolders <- list.dirs(tsv_folder, recursive = TRUE)[-1]
 abundances_tsv <- file.path(tsv_subfolders, "abundance.tsv")
 abundances_h5 <- file.path(tsv_subfolders, "abundance.h5")
 
+names(abundances_h5) <- paste0("sample", 1:226)
+
 metadata <- mutate(metadata, path = abundances_h5)
 
 ensembl <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = "ensembl.org")
 datasets <- listDatasets(ensembl)
 
-mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "ensembl.org")
-ttg <- getBM(attributes = c("ensembl_transcript_id", "transcript_version", "ensembl_gene_id", "external_gene_name", "description", "transcript_biotype"), mart = mart)
-ttg <- rename(ttg, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
-ttg <- select(ttg, c("target_id", "ens_gene", "ext_gene"))
+ttg <- read.table("data/tx2gene.txt", sep = "\t", col.names = c("target_id", "ens_gene", "ext_gene"))
+
+## aggregate gene transcripts using tximport
+
+txi.kallisto <- tximport(abundances_h5, type = "kallisto", txOut = FALSE, tx2gene=ttg)
+
+# mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "ensembl.org")
+# ttg <- getBM(attributes = c("ensembl_transcript_id", "transcript_version", "ensembl_gene_id", "external_gene_name", "description", "transcript_biotype"), mart = mart)
+# ttg <- rename(ttg, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
+# ttg <- select(ttg, c("target_id", "ens_gene", "ext_gene"))
+
+## sleuth analysis
 
 # so <- sleuth_prep(metadata, target_mapping = ttg, aggregation_column = "ens_gene", extra_bootstrap_summary = TRUE)
 
