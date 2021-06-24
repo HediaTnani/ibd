@@ -4,6 +4,7 @@ library(annotables)
 library(biomaRt)
 library(dplyr)
 library(ggplot2)
+library(vegan)
 
 wd <- getwd()
 # setwd("./..")
@@ -104,6 +105,8 @@ volcano +
   theme(legend.position = "none")
 
 # pca plot
+
+
 
 pca <- plot_pca(so, color_by = 'Diagnosis', point_alpha = 0.5)
 
