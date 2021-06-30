@@ -20,8 +20,8 @@ num_samples = 226
 
 # import transcript table
 print('importing transcript table...')
-transcript_df = pandas.read_csv('../tpm_table_old.csv', index_col=0, header=0)
-transcript_id = pandas.read_csv('../tpm_table.csv', index_col=0, header=0)
+transcript_df = pandas.read_csv('../gene_tpm.csv', index_col=0, header=0)
+# transcript_id = pandas.read_csv('../tpm_table.csv', index_col=0, header=0)
 
 # make sure the index is string, not int, for integration with GIMME
 print('converting transcript indices...')
@@ -30,7 +30,7 @@ transcript_df.index = new_index
 
 # read in the metadata which contains sample IDs
 print('importing patient metadata...')
-metadata = pandas.read_csv('../protect/SraRunTable.txt', index_col=0, header=0)
+metadata = pandas.read_csv('data/SraRunTable.txt', index_col=0, header=0)
 
 # transform the simulated counts using the rank-based approach
 print('transforming simulated counts...')
@@ -53,7 +53,7 @@ for sample,subdata in transcript_df.groupby(by=transcript_df.columns,axis=1):
 print('normalizing transcripts...')
 transcript_df = transcript_df.div(transcript_df.max(axis=1), axis=0)
 transcript_df.fillna(0, inplace=True)
-transcript_df.reindex(transcript_id.index)
+# transcript_df.reindex(transcript_id.index)
 
 
 # create the expression profile object using Driven
@@ -100,14 +100,14 @@ with model:
         gimme_solutions[sample] = gimme_solution
 
 # write output to csv
-print('writing fluxes to csv...')
+# print('writing fluxes to csv...')
 
-count = 0
-while count < num_samples:
-    gimme_solutions[transcript_df.columns[count]].fluxes.to_csv('data/fluxes/patient_'+str(count+1)+'.tsv', sep='\t')
+# count = 0
+# while count < num_samples:
+#     gimme_solutions[transcript_df.columns[count]].fluxes.to_csv('data/fluxes/patient_'+str(count+1)+'.tsv', sep='\t')
 
-    with open('data/consistency.txt', 'a+') as consistency_scores:
-        consistency_scores.write('patient_'+str(count+1)+':\t'+str(gimme_solution.objective_value)+'\n')
+#     with open('data/consistency.txt', 'a+') as consistency_scores:
+#         consistency_scores.write('patient_'+str(count+1)+':\t'+str(gimme_solution.objective_value)+'\n')
 
-    count = count + 1
+#     count = count + 1
 

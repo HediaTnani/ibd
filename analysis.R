@@ -10,7 +10,7 @@ library(vegan)
 
 ## import data
 
-metadata <- read.csv("../protect/SraRunTable.txt")
+metadata <- read.csv("data/SraRunTable.txt")
 metadata <- select(metadata, c('Run', 'Diagnosis', 'sex'))
 metadata <- rename(metadata, sample = Run)
 

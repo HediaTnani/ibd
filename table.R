@@ -8,7 +8,7 @@ library(data.table)
 
 ttg <- read.table("data/tx2gene.txt", sep = "\t", col.names = c("target_id", "ens_gene", "ext_gene"))
 
-metadata <- read.csv("../protect/SraRunTable.txt")
+metadata <- read.csv("data/SraRunTable.txt")
 
 tsv_folder <- "../protect/tsv"
 tsv_subfolders <- list.dirs(tsv_folder, recursive = TRUE)[-1]
