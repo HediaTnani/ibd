@@ -27,7 +27,11 @@ __Progress Log:__
 
 6/7/21 - took preliminary sleuth lrt tests and analysis on kallisto results. identified differentially expressed genes between control and ibd patients.
 
-6/16/21 - commit local gimme prep
+6/16/21 - commit local gimme prep.
 
 6/17/21 - some gimme and driven debugging for test e. coli data. changed files for driven package are in driven/, gimme consistency scores are in data/consistency.txt, and fluxes for each sample are in data/fluxes/.
+
+6/23/21 - produced new gene annotation table from original index file and ran deseq2 for a volcano plot.
+
+6/24/21 - reran sleuth with new gene annotation table at gene-level analysis and reformatted sleuth volcano and pca plots for comparison. added some permanova results for pca plots to show that spreads of control and ibd patients are statistically different across PC1 and PC2.
 

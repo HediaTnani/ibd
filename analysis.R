@@ -1,0 +1,252 @@
+library(Biobase)
+library(tximport)
+library(DESeq2)
+library("sleuth")
+library(annotables)
+library(biomaRt)
+library(dplyr)
+library(ggplot2)
+library(vegan)
+
+## import data
+
+metadata <- read.csv("../protect/SraRunTable.txt")
+metadata <- select(metadata, c('Run', 'Diagnosis', 'sex'))
+metadata <- rename(metadata, sample = Run)
+
+tsv_folder <- "../protect/tsv"
+tsv_subfolders <- list.dirs(tsv_folder, recursive = TRUE)[-1]
+abundances_tsv <- file.path(tsv_subfolders, "abundance.tsv")
+abundances_h5 <- file.path(tsv_subfolders, "abundance.h5")
+
+metadata <- mutate(metadata, path = abundances_h5)
+
+# ensembl <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = "ensembl.org")
+# datasets <- listDatasets(ensembl)
+
+# mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "ensembl.org")
+# ttg <- getBM(attributes = c("ensembl_transcript_id", "transcript_version", "ensembl_gene_id", "external_gene_name", "description", "transcript_biotype"), mart = mart)
+# ttg <- rename(ttg, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
+# ttg <- select(ttg, c("target_id", "ens_gene", "ext_gene"))
+
+ttg <- read.table("data/tx2gene.txt", sep = "\t", col.names = c("target_id", "ens_gene", "ext_gene"))
+
+## tximport for deseq2
+
+names(abundances_h5) <- metadata$sample
+txi.kallisto <- tximport(abundances_h5, type = "kallisto", tx2gene = ttg, txOut = TRUE)
+txi.sum <- summarizeToGene(txi.kallisto, tx2gene = select(ttg, c("target_id", "ext_gene")))
+
+## statistical analysis
+
+# hierarchical clustering
+
+# outlier samples?? maybe toss bad outliers
+# check with PCA, check number of reads/samples with that sample
+
+
+gene_df <- as.data.frame(txi.sum$abundance)
+
+dist <- vegdist(t(gene_df), method = "bray")
+anova <- anova(betadisper(dist, metadata$Diagnosis))
+clus <- hclust(dist, "single",)
+plot(clus)
+
+# permanova distances
+# deseq finds simple differences, while adonis looks for multivariate differences (differences in genes rely on each other)
+# adonis coefficients??
+# make captions for all figures, methods for figure generation
+
+
+permanova <- adonis(t(gene_df) ~ Diagnosis, data = metadata, method = "bray", permutations = 99)
+print(as.data.frame(permanova$aov.tab)["Diagnosis", "Pr(>F)"])
+
+coef <- coefficients(permanova)["Diagnosis1",]
+top.coef <- coef[rev(order(abs(coef)))[1:20]]
+par(mar = c(3, 14, 2, 1))
+barplot(sort(top.coef), horiz = T, las = 1, main = "Top Genes")
+
+## deseq2 analysis
+
+sampleTable <- data.frame(condition = factor(metadata$Diagnosis))
+rownames(sampleTable) <- colnames(txi.sum$counts) 
+dds <- DESeqDataSetFromTximport(txi.sum, sampleTable, ~condition)
+dds <- DESeq(dds) 
+res <- results(dds, tidy=TRUE)
+# gts <- select(ttg, "ens_gene", "ext_gene")
+# names(gts) <- c("row", "symbol")
+# res_m <- distinct(merge(res, gts, all.x=TRUE))
+
+# export deseq2 results
+
+write.csv(res, "data/protect_results/deseq2_gene.csv")
+
+## sleuth analysis
+
+so <- sleuth_prep(metadata, target_mapping = ttg, aggregation_column = "ens_gene", extra_bootstrap_summary = TRUE, transformation_function = function(x) log2(x + 0.5), gene_mode = TRUE)
+
+so <- sleuth_fit(so, ~sex, 'reduced')
+so <- sleuth_fit(so, ~sex + Diagnosis, 'full')
+
+so <- sleuth_lrt(so, 'reduced', 'full')
+sleuth_table_lrt <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
+#sleuth_table_lrt <- filter(sleuth_table_lrt, qval <= 0.05)
+
+so$pval_aggregate <- FALSE
+
+so <- sleuth_wt(so, 'DiagnosisUlcerative Colitis', 'full')
+so <- sleuth_wt(so, 'sexmale', 'full')
+sleuth_table_wt <- sleuth_results(so, 'DiagnosisUlcerative Colitis', test_type = 'wt', which_model = 'full', show_all = FALSE)
+#sleuth_table_wt <- filter(sleuth_table_wt, qval <= 0.05)
+
+so$pval_aggregate <- TRUE
+
+sleuth_live(so)
+
+# export sleuth results
+
+write.csv(sleuth_table_lrt, "data/protect_results/sleuth_lrt.csv")
+write.csv(sleuth_table_wt, "data/protect_results/sleuth_wt.csv")
+
+## figure generation
+
+# deseq2 volcano plot
+
+volcano_data <-  select(res, c("row", "padj", "log2FoldChange"))
+volcano_data <- na.omit(volcano_data)
+volcano_data$log_qval <- -log10(volcano_data$padj)
+#volcano_data <- aggregate(. ~ symbol, volcano_data, sum)
+
+volcano_data$Legend <- cut(volcano_data$log2FoldChange, breaks = c(-Inf, -4, 4, Inf), labels = c("-", "0", "+"))
+
+count <- 1
+volcano_data$Legend <- as.character(volcano_data$Legend)
+for (i in volcano_data$Legend) {
+  if (volcano_data$log_qval[count] > 30) {
+    volcano_data$Legend[count] <- paste(i, "+", sep="")
+  } else {
+    volcano_data$Legend[count] <- paste(i, "-", sep="")
+  }
+  count <- count + 1
+}
+
+count <- 1
+for (i in volcano_data$Legend) {
+  if (i == "++") {
+    volcano_data$Legend[count] <- "significant positive"
+  } else if (i == "+-") {
+    volcano_data$Legend[count] <- "insignificant positive"
+  } else if (i == "0+") {
+    volcano_data$Legend[count] <- "significant neutral"
+  } else if (i == "0-") {
+    volcano_data$Legend[count] <- "insignificant neutral"
+  } else if (i == "-+") {
+    volcano_data$Legend[count] <- "significant negative"
+  } else if (i == "--") {
+    volcano_data$Legend[count] <- "insignificant negative"
+  }
+  count <- count + 1
+}
+
+volcano_data$Legend <- as.factor(volcano_data$Legend)
+
+volcano <- ggplot(volcano_data, aes(x=log2FoldChange, y=-log10(padj), color = Legend))
+
+volcano + 
+  geom_point(aes(alpha = 0.5)) +
+  geom_text(aes(label = ifelse(Legend == "significant positive" | Legend == "significant negative", row, '')), hjust = 0, vjust = 0) +
+  geom_vline(xintercept = -4, linetype="dashed", size = 0.3) + 
+  geom_vline(xintercept = 4, linetype="dashed", size = 0.3) + 
+  geom_hline(yintercept = 30, linetype="dashed", size = 0.3) + 
+  ggtitle("Volcano Plot (DESeq2)") + 
+  xlab(expression(paste(log[2], "(Fold Change)"))) + 
+  ylab(expression(paste(-log[10], "(Q-value)"))) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
+  theme(legend.position = "none")
+
+# sleuth volcano plot
+
+volcano_data <-  select(sleuth_table_wt, c("ext_gene","qval", "b"))
+volcano_data$log_qval <- -log10(volcano_data$qval)
+
+volcano_data$Legend <- cut(volcano_data$b, breaks = c(-Inf, -4, 4, Inf), labels = c("-", "0", "+"))
+count <- 1
+
+volcano_data$Legend <- as.character(volcano_data$Legend)
+for (i in volcano_data$Legend) {
+  if (volcano_data$log_qval[count] > 30) {
+    volcano_data$Legend[count] <- paste(i, "+", sep="")
+  } else {
+    volcano_data$Legend[count] <- paste(i, "-", sep="")
+  }
+  count <- count + 1
+}
+
+count <- 1
+for (i in volcano_data$Legend) {
+  if (i == "++") {
+    volcano_data$Legend[count] <- "significant positive"
+  } else if (i == "+-") {
+    volcano_data$Legend[count] <- "insignificant positive"
+  } else if (i == "0+") {
+    volcano_data$Legend[count] <- "significant neutral"
+  } else if (i == "0-") {
+    volcano_data$Legend[count] <- "insignificant neutral"
+  } else if (i == "-+") {
+    volcano_data$Legend[count] <- "significant negative"
+  } else if (i == "--") {
+    volcano_data$Legend[count] <- "insignificant negative"
+  }
+  count <- count + 1
+}
+
+volcano_data$Legend <- as.factor(volcano_data$Legend)
+
+volcano <- ggplot(volcano_data, aes(x=b, y=-log10(qval), color = Legend))
+
+volcano + 
+  geom_point(aes(alpha = 0.5)) +
+  geom_text(aes(label = ifelse(Legend == "significant positive" | Legend == "significant negative", ext_gene, '')), hjust = 0, vjust = 0) +
+  geom_vline(xintercept = -4, linetype="dashed", size = 0.3) + 
+  geom_vline(xintercept = 4, linetype="dashed", size = 0.3) + 
+  geom_hline(yintercept = 30, linetype="dashed", size = 0.3) + 
+  ggtitle("Volcano Plot (Sleuth)") + 
+  xlab(expression(paste(log[2], "(Fold Change)"))) + 
+  ylab(expression(paste(-log[10], "(Q-value)"))) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
+  theme(legend.position = "none")
+
+# pca plots
+
+pca_tpm <- plot_pca(so, units = "tpm", color_by = 'Diagnosis', point_alpha = 0.5)
+
+pca_tpm +
+  ggtitle("Principal Component Analysis (TPM)") + 
+  xlab("PC1 (62.162%)") + 
+  ylab("PC2 (26.471%)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+pca_counts <- plot_pca(so, units = "est_counts", color_by = 'Diagnosis', point_alpha = 0.5)
+
+# permanova <- adonis(select(pca_counts$data, c("PC1", "PC2")) ~ pca_counts$data$Diagnosis, method = "manhattan", perm = 999)
+# coef <- coefficients(permanova)["pca_counts$data$Diagnosis1",]
+
+pca_counts +
+  ggtitle("Principal Component Analysis (Scaled Reads)") + 
+  xlab("PC1 (62.27%)") + 
+  ylab("PC2 (17.34%)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
+  stat_ellipse(aes(x = pca_counts$data$PC1, y = pca_counts$data$PC2), type = "t", level = 0.95, linetype = "dashed", size = 0.3)
+
+# pca variances plots
+
+pca_var_tpm <- plot_pc_variance(so, use_filtered = TRUE, units = "tpm",
+                 pca_number = NULL, scale = FALSE, PC_relative = NULL)
+
+pca_var_counts <- plot_pc_variance(so, use_filtered = TRUE, units = "est_counts",
+                                pca_number = NULL, scale = FALSE, PC_relative = NULL)
+
