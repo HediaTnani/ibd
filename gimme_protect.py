@@ -13,6 +13,15 @@ from optlang.symbolics import Zero
 from six import iteritems
 from gimme import gimme_mod
 
+import os
+
+# Get the current working directory
+cwd = os.getcwd()
+
+# Print the current working directory
+print("Current working directory: {0}".format(cwd))
+
+
 # import human genome model
 print('importing human genome model...')
 model = cobra.io.read_sbml_model('data/HUMAN-GEM.xml')
