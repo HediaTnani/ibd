@@ -24,10 +24,10 @@ print("Current working directory: {0}".format(cwd))
 
 # import human genome model
 print('importing human genome model...')
-#model = cobra.io.read_sbml_model('data/HUMAN-GEM.xml')
+model = cobra.io.read_sbml_model('data/HUMAN-GEM.xml')
 
-#num_genes = len(model.genes)
-#num_samples = 226
+num_genes = len(model.genes)
+num_samples = 226
 
 # import transcript table
 print('importing transcript table...')
