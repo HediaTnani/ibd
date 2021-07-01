@@ -98,7 +98,6 @@ exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
 
 gimme_solutions = {}
 
-
 with model:
     for sample in transcript_df.columns:
         print('calling gimme on '+str(sample)+'...')
