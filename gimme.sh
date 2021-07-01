@@ -9,16 +9,9 @@
 module purge
 module load anaconda/2020.11-py3.8
 
-python3 -m pip install --user virtualenv
-
-cd ..
+cd /project/tumi/park
 python3 -m venv env
 source env/bin/activate
 cd ibd
-
-pip3 install cobra
-pip3 install numpy
-pip3 install pandas
-pip3 install -e git+https://github.com/gregmedlock/driven@devel#egg=driven
 
 python3 gimme_protect.py
