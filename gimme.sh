@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH --nodes=1
+#SBATCH --nodes=28
 #SBATCH --ntasks=1
-#SBATCH --time=3-00:00:00
+#SBATCH --time=7-00:00:00
 #SBATCH --partition=standard
-#SBATCH --mem=24576
+#SBATCH --mem=131072
 #SBATCH --account=tumi
 
 module purge

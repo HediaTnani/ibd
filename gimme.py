@@ -72,8 +72,11 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
         print('performing first optimization...')
 
         solution = model.slim_optimize() # returns the flux through the objective
+        # print("1")
         prob = model.problem # extracts the optimization problem
+        # print("2")
         rxn_profile = expression_profile.to_reaction_dict(condition, model)
+        # print("3")
 
         if model.objective_direction == 'max':
             fix_obj_const = prob.Constraint(model.objective.expression,
@@ -84,6 +87,7 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
                                             ub=fraction_of_optimum * solution,
                                             name="RMF")
         model.add_cons_vars(fix_obj_const)
+        # print("4")
 
         print('generating coefficients...')
 
