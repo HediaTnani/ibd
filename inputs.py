@@ -42,3 +42,5 @@ transcript_df = pandas.read_csv('../id_tpm.csv', index_col=0, header=0)
 # read in the metadata which contains sample IDs
 print('importing patient metadata...')
 metadata = pandas.read_csv('data/SraRunTable.txt', index_col=0, header=0)
+
+print(transcript_df.columns[0:7])
