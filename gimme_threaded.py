@@ -98,24 +98,117 @@ exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
 
 gimme_solutions = {}
 
+def gimme_thread(columns):
 
-with model:
-    for sample in transcript_df.columns:
-        print('calling gimme on '+str(sample)+'...')
-        constrained_model,gimme_solution,condition = gimme_mod(model,
-                                                      exp_prof,
-                                                      condition=sample,
-                                                      cutoff = 1.0,
-                                                      fraction_of_optimum = 0.1,
-                                                      max_penalty=1.0)
+    with model:
+        for sample in columns:
+            print('calling gimme on '+str(sample)+'...')
+            constrained_model,gimme_solution,condition = gimme_mod(model,
+                                                          exp_prof,
+                                                          condition=sample,
+                                                          cutoff = 1.0,
+                                                          fraction_of_optimum = 0.1,
+                                                          max_penalty=1.0)
 
-        gimme_solution.fluxes.to_csv('data/fluxes/'+str(sample)+'.tsv', sep='\t')
-        with open('data/consistency.txt', 'a+') as consistency_scores:
-            consistency_scores.write(str(sample)+':\t'+str(gimme_solution.objective_value)+'\n')
-        
-        # print(coefficients)
-        gimme_solutions[sample] = gimme_solution
+            gimme_solution.fluxes.to_csv('data/fluxes/'+str(sample)+'.tsv', sep='\t')
+            with open('data/consistency.txt', 'a+') as consistency_scores:
+                consistency_scores.write(str(sample)+':\t'+str(gimme_solution.objective_value)+'\n')
+            
+            # print(coefficients)
+            gimme_solutions[sample] = gimme_solution
 
+
+if __name__ == "__main__":
+
+    p1 = Process(target=gimme_thread, args=(transcript_df.columns[0:7]))
+    p2 = Process(target=gimme_thread, args=(transcript_df.columns[8:15]))
+    p3 = Process(target=gimme_thread, args=(transcript_df.columns[16:23]))
+    p4 = Process(target=gimme_thread, args=(transcript_df.columns[24:31]))
+    p5 = Process(target=gimme_thread, args=(transcript_df.columns[32:39]))
+    p6 = Process(target=gimme_thread, args=(transcript_df.columns[40:47]))
+    p7 = Process(target=gimme_thread, args=(transcript_df.columns[48:55]))
+    p8 = Process(target=gimme_thread, args=(transcript_df.columns[56:63]))
+    p9 = Process(target=gimme_thread, args=(transcript_df.columns[64:71]))
+    p10 = Process(target=gimme_thread, args=(transcript_df.columns[72:79]))
+    p11 = Process(target=gimme_thread, args=(transcript_df.columns[80:87]))
+    p12 = Process(target=gimme_thread, args=(transcript_df.columns[88:95]))
+    p13 = Process(target=gimme_thread, args=(transcript_df.columns[96:103]))
+    p14 = Process(target=gimme_thread, args=(transcript_df.columns[104:111]))
+    p15 = Process(target=gimme_thread, args=(transcript_df.columns[112:119]))
+    p16 = Process(target=gimme_thread, args=(transcript_df.columns[120:127]))
+    p17 = Process(target=gimme_thread, args=(transcript_df.columns[128:135]))
+    p18 = Process(target=gimme_thread, args=(transcript_df.columns[136:143]))
+    p19 = Process(target=gimme_thread, args=(transcript_df.columns[144:151]))
+    p20 = Process(target=gimme_thread, args=(transcript_df.columns[152:159]))
+    p21 = Process(target=gimme_thread, args=(transcript_df.columns[160:167]))
+    p22 = Process(target=gimme_thread, args=(transcript_df.columns[168:175]))
+    p23 = Process(target=gimme_thread, args=(transcript_df.columns[176:183]))
+    p24 = Process(target=gimme_thread, args=(transcript_df.columns[184:191]))
+    p25 = Process(target=gimme_thread, args=(transcript_df.columns[192:199]))
+    p26 = Process(target=gimme_thread, args=(transcript_df.columns[200:207]))
+    p27 = Process(target=gimme_thread, args=(transcript_df.columns[208:215]))
+    p28 = Process(target=gimme_thread, args=(transcript_df.columns[216:225]))
+
+
+    p1.start()
+    p2.start()
+    p3.start()
+    p4.start()
+    p5.start()
+    p6.start()
+    p7.start()
+    p8.start()
+    p9.start()
+    p10.start()
+    p11.start()
+    p12.start()
+    p13.start()
+    p14.start()
+    p15.start()
+    p16.start()
+    p17.start()
+    p18.start()
+    p19.start()
+    p20.start()
+    p21.start()
+    p22.start()
+    p23.start()
+    p24.start()
+    p25.start()
+    p26.start()
+    p27.start()
+    p28.start()
+
+    p1.join()
+    p2.join()
+    p3.join()
+    p4.join()
+    p5.join()
+    p6.join()
+    p7.join()
+    p8.join()
+    p9.join()
+    p10.join()
+    p11.join()
+    p12.join()
+    p13.join()
+    p14.join()
+    p15.join()
+    p16.join()
+    p17.join()
+    p18.join()
+    p19.join()
+    p20.join()
+    p21.join()
+    p22.join()
+    p23.join()
+    p24.join()
+    p25.join()
+    p26.join()
+    p27.join()
+    p28.join()
+
+    print("Done!")
 
 # write output to csv
 # print('writing fluxes to csv...')
