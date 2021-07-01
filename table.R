@@ -18,12 +18,16 @@ abundances_h5 <- file.path(tsv_subfolders, "abundance.h5")
 row <- read.csv(abundances_tsv[[1]], sep = "\t")$target_id
 col <- metadata$Run
 df_row <- data.frame(row)
-ttg_id <- select(ttg, c("target_id", "ext_gene"))
+ttg_name <- select(ttg, c("target_id", "ext_gene"))
+ttg_id <- select(ttg, c("target_id", "ens_gene"))
 
-names(ttg_id) <- c("row", "symbol")
-ttg_id$symbol[[187688]] <- "5-nucleotidase"
-ttg_id$symbol[[187461]] <- "Wilms"
-reduced <- merge(df_row, ttg_id, all.x=TRUE)  
+names(ttg_name) <- c("row", "symbol")
+ttg_name$symbol[[187688]] <- "5-nucleotidase"
+ttg_name$symbol[[187461]] <- "Wilms"
+reduced_gene <- merge(df_row, ttg_name, all.x=TRUE)  
+
+names(ttg_id) <- c("row", "id")
+reduced_id <- merge(df_row, ttg_id, all.x=TRUE)  
 
 tsv_df <- data.frame(matrix(ncol=226, nrow=199240, dimnames=list(row, col)))
 
@@ -37,9 +41,20 @@ transcript_df <- tsv_df
 
 # write.csv(transcript_df, "../transcript_tpm.csv")
 
+## convert transcript id to gene id
+
+id_df <- tsv_df
+id_df$id <- sub("*\\.[0-9]", "", reduced_id$id)
+
+id_df <- aggregate(id_df[,sapply(id_df,is.numeric)], id_df["id"], sum)
+row.names(id_df) <- id_df$id
+id_df <- select(id_df, all_of(col))
+
+write.csv(id_df, "../id_tpm.csv")
+
 ## aggregate tpm table to gene-level
 
-tsv_df$symbol <- reduced$symbol
+tsv_df$symbol <- reduced_gene$symbol
 tsv_df <- aggregate(tsv_df[,sapply(tsv_df,is.numeric)], tsv_df["symbol"], sum)
 row.names(tsv_df) <- tsv_df$symbol
 tsv_df <- select(tsv_df, all_of(col))
@@ -47,35 +62,4 @@ tsv_df <- select(tsv_df, all_of(col))
 gene_df <- tsv_df
 
 # write.csv(gene_df, "../gene_tpm.csv")
-
-## statistical testing
-
-# anova and hierarchical clustering
-
-dist <- vegdist(t(gene_df), method = "euclidean")
-anova <- anova(betadisper(dist, metadata$Diagnosis))
-clus <- hclust(dist, "single",)
-plot(clus)
-
-# transcript permanova
-
-permanova <- adonis(t(transcript_df) ~ Diagnosis, data = metadata, method = "bray", permutations = 99)
-print(as.data.frame(permanova$aov.tab)["Diagnosis", "Pr(>F)"])
-
-coef <- coefficients(permanova)["Diagnosis1",]
-top.coef <- coef[rev(order(abs(coef)))[1:20]]
-par(mar = c(3, 14, 2, 1))
-barplot(sort(top.coef), horiz = T, las = 1, main = "Top Transcripts")
-
-# gene permanova
-
-permanova <- adonis(t(gene_df) ~ Diagnosis, data = metadata, method = "euclidean", permutations = 99)
-print(as.data.frame(permanova$aov.tab)["Diagnosis", "Pr(>F)"])
-
-coef <- coefficients(permanova)["Diagnosis1",]
-top.coef <- coef[rev(order(abs(coef)))[1:20]]
-par(mar = c(3, 14, 2, 1))
-barplot(sort(top.coef), horiz = T, las = 1, main = "Top Genes")
-
-
 
