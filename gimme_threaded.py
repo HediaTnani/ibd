@@ -110,24 +110,41 @@ def gimme_thread(model,transcript_df,metadata,exp_prof,columns):
             # print(coefficients)
             gimme_solutions[sample] = gimme_solution
 
+cols_1 = numpy.linspace(0,13,14,dtype=int).tolist()
+cols_2 = numpy.linspace(14,27,14,dtype=int).tolist()
+cols_3 = numpy.linspace(28,41,14,dtype=int).tolist()
+cols_4 = numpy.linspace(42,55,14,dtype=int).tolist()
+cols_5 = numpy.linspace(56,69,14,dtype=int).tolist()
+cols_6 = numpy.linspace(70,83,14,dtype=int).tolist()
+cols_7 = numpy.linspace(84,97,14,dtype=int).tolist()
+cols_8 = numpy.linspace(98,111,14,dtype=int).tolist()
+cols_9 = numpy.linspace(112,125,14,dtype=int).tolist()
+cols_10 = numpy.linspace(126,139,14,dtype=int).tolist()
+cols_11 = numpy.linspace(140,153,14,dtype=int).tolist()
+cols_12 = numpy.linspace(154,167,14,dtype=int).tolist()
+cols_13 = numpy.linspace(168,181,14,dtype=int).tolist()
+cols_14 = numpy.linspace(182,195,14,dtype=int).tolist()
+cols_15 = numpy.linspace(196,209,14,dtype=int).tolist()
+cols_16 = numpy.linspace(210,225,14,dtype=int).tolist()
+
 
 data = [
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(0,13,14,dtype=int).tolist(),), 
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(14,27,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(28,41,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(42,55,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(56,69,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(70,83,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(84,97,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(98,111,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(112,125,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(126,139,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(140,153,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(154,167,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(168,181,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(182,195,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(196,209,14,dtype=int).tolist(),),
-    (model,transcript_df,metadata,exp_prof,numpy.linspace(210,225,14,dtype=int).tolist(),)
+    (model,transcript_df,metadata,exp_prof,cols_1), 
+    (model,transcript_df,metadata,exp_prof,cols_2),
+    (model,transcript_df,metadata,exp_prof,cols_3),
+    (model,transcript_df,metadata,exp_prof,cols_4),
+    (model,transcript_df,metadata,exp_prof,cols_5),
+    (model,transcript_df,metadata,exp_prof,cols_6),
+    (model,transcript_df,metadata,exp_prof,cols_7),
+    (model,transcript_df,metadata,exp_prof,cols_8),
+    (model,transcript_df,metadata,exp_prof,cols_9),
+    (model,transcript_df,metadata,exp_prof,cols_10),
+    (model,transcript_df,metadata,exp_prof,cols_11),
+    (model,transcript_df,metadata,exp_prof,cols_12),
+    (model,transcript_df,metadata,exp_prof,cols_13),
+    (model,transcript_df,metadata,exp_prof,cols_14),
+    (model,transcript_df,metadata,exp_prof,cols_15),
+    (model,transcript_df,metadata,exp_prof,cols_16)
     ]
 
 def run_pool():
