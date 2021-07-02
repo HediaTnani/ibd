@@ -18,17 +18,7 @@ def return_model():
     model = cobra.io.read_sbml_model('data/Human-GEM.xml')
     return model
 
-# import human genome model
-print('importing human genome model...')
-model = return_model()
-
-num_genes = len(model.genes)
-num_samples = 226
-
-def gimme_thread(model,columns):
-
-    # import transcript table
-    print('importing transcript table...')
+def return_transcript():
     transcript_df = pandas.read_csv('../id_tpm.csv', index_col=0, header=0)
     # transcript_id = pandas.read_csv('../tpm_table.csv', index_col=0, header=0)
 
@@ -38,8 +28,8 @@ def gimme_thread(model,columns):
     # transcript_df.index = new_index
 
     # read in the metadata which contains sample IDs
-    print('importing patient metadata...')
-    metadata = pandas.read_csv('data/SraRunTable.txt', index_col=0, header=0)
+    # print('importing patient metadata...')
+    # metadata = pandas.read_csv('data/SraRunTable.txt', index_col=0, header=0)
 
     # transform the simulated counts using the rank-based approach
     print('transforming simulated counts...')
@@ -65,13 +55,12 @@ def gimme_thread(model,columns):
     # transcript_df.reindex(transcript_id.index)
 
     # print(transcript_df.columns)
+    return transcript_df
 
-
-    # create the expression profile object using Driven
-    print('generating expression profile...')
+def return_exp():
     exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
-                                 conditions=transcript_df.columns.values,
-                                 expression=transcript_df.values)
+                             conditions=transcript_df.columns.values,
+                             expression=transcript_df.values)
 
     # print(Symbol(model.genes[1].id))
     # print(exp_prof.to_reaction_dict("SRR6467548", model))
@@ -94,6 +83,22 @@ def gimme_thread(model,columns):
     #             new_rule += ' ' + entry
     #     reaction.gene_reaction_rule = new_rule
 
+    return exp_prof
+
+
+# import human genome model
+print('importing human genome model...')
+model = return_model()
+
+# import transcript table
+print('importing transcript table...')
+transcript_df = return_transcript()
+
+# create the expression profile object using Driven
+print('generating expression profile...')
+exp_prof = return_exp()
+
+def gimme_thread(model,transcript_df,exp_prof,columns):
 
     gimme_solutions = {}
 
@@ -116,22 +121,22 @@ def gimme_thread(model,columns):
 
 
 data = [
-    (model,numpy.linspace(0,13,14,dtype=int).tolist(),), 
-    (model,numpy.linspace(14,27,14,dtype=int).tolist(),),
-    (model,numpy.linspace(28,41,14,dtype=int).tolist(),),
-    (model,numpy.linspace(42,55,14,dtype=int).tolist(),),
-    (model,numpy.linspace(56,69,14,dtype=int).tolist(),),
-    (model,numpy.linspace(70,83,14,dtype=int).tolist(),),
-    (model,numpy.linspace(84,97,14,dtype=int).tolist(),),
-    (model,numpy.linspace(98,111,14,dtype=int).tolist(),),
-    (model,numpy.linspace(112,125,14,dtype=int).tolist(),),
-    (model,numpy.linspace(126,139,14,dtype=int).tolist(),),
-    (model,numpy.linspace(140,153,14,dtype=int).tolist(),),
-    (model,numpy.linspace(154,167,14,dtype=int).tolist(),),
-    (model,numpy.linspace(168,181,14,dtype=int).tolist(),),
-    (model,numpy.linspace(182,195,14,dtype=int).tolist(),),
-    (model,numpy.linspace(196,209,14,dtype=int).tolist(),),
-    (model,numpy.linspace(210,225,14,dtype=int).tolist(),)
+    (model,transcript_df,exp_prof,numpy.linspace(0,13,14,dtype=int).tolist(),), 
+    (model,transcript_df,exp_prof,numpy.linspace(14,27,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(28,41,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(42,55,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(56,69,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(70,83,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(84,97,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(98,111,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(112,125,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(126,139,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(140,153,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(154,167,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(168,181,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(182,195,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(196,209,14,dtype=int).tolist(),),
+    (model,transcript_df,exp_prof,numpy.linspace(210,225,14,dtype=int).tolist(),)
     ]
 
 def run_pool():
