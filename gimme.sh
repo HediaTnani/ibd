@@ -10,7 +10,6 @@ module purge
 module load anaconda/2020.11-py3.8
 
 cd /project/tumi/park
-python3 -m venv env
 source env/bin/activate
 cd ibd
 
