@@ -9,8 +9,7 @@
 module purge
 module load anaconda/2020.11-py3.8
 
-cd /project/tumi/park
-source env/bin/activate
-cd ibd
+cd /project/tumi/park/ibd
+source ../env/bin/activate
 
 python3 gimme_threaded.py
