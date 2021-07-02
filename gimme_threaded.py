@@ -119,7 +119,7 @@ if __name__ == "__main__":
     p4 = Process(target=gimme_thread, args=(numpy.linspace(42,55,14,dtype=int).tolist(),))
     p5 = Process(target=gimme_thread, args=(numpy.linspace(56,69,14,dtype=int).tolist(),))
     p6 = Process(target=gimme_thread, args=(numpy.linspace(70,83,14,dtype=int).tolist(),))
-    p7 = Process(target=gimme_thread, args=(numpy.linspace(84,97,14,dtype=int.tolist(),))
+    p7 = Process(target=gimme_thread, args=(numpy.linspace(84,97,14,dtype=int).tolist(),))
     p8 = Process(target=gimme_thread, args=(numpy.linspace(98,111,14,dtype=int).tolist(),))
     p9 = Process(target=gimme_thread, args=(numpy.linspace(112,125,14,dtype=int).tolist(),))
     p10 = Process(target=gimme_thread, args=(numpy.linspace(126,139,14,dtype=int).tolist(),))
