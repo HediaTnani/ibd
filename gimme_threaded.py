@@ -130,7 +130,7 @@ data = ([model,transcript_df,metadata,exp_prof,numpy.linspace(0,13,14,dtype=int)
     )
 
 def run_pool():
-    p = Pool.(16)
+    p = Pool(16)
     p.map(gimme_thread,data)
 
 
