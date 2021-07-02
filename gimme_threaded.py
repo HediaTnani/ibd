@@ -111,27 +111,28 @@ def gimme_thread(model,transcript_df,metadata,exp_prof,columns):
             gimme_solutions[sample] = gimme_solution
 
 
-data = ([model,transcript_df,metadata,exp_prof,numpy.linspace(0,13,14,dtype=int).tolist(),], 
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(14,27,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(28,41,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(42,55,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(56,69,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(70,83,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(84,97,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(98,111,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(112,125,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(126,139,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(140,153,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(154,167,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(168,181,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(182,195,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(196,209,14,dtype=int).tolist(),],
-    [model,transcript_df,metadata,exp_prof,numpy.linspace(210,225,14,dtype=int).tolist(),]
-    )
+data = [
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(0,13,14,dtype=int).tolist(),), 
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(14,27,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(28,41,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(42,55,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(56,69,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(70,83,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(84,97,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(98,111,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(112,125,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(126,139,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(140,153,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(154,167,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(168,181,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(182,195,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(196,209,14,dtype=int).tolist(),),
+    (model,transcript_df,metadata,exp_prof,numpy.linspace(210,225,14,dtype=int).tolist(),)
+    ]
 
 def run_pool():
     p = Pool(16)
-    p.map(gimme_thread,data)
+    p.starmap(gimme_thread,data)
 
 
 if __name__ == "__main__":
