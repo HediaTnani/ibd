@@ -14,14 +14,16 @@ from six import iteritems
 from gimme import gimme_mod
 
 
-def gimme_thread(columns):
 
-    # import human genome model
-    print('importing human genome model...')
-    model = cobra.io.read_sbml_model('data/Human-GEM.xml')
 
-    num_genes = len(model.genes)
-    num_samples = 226
+# import human genome model
+print('importing human genome model...')
+model = cobra.io.read_sbml_model('data/Human-GEM.xml')
+
+num_genes = len(model.genes)
+num_samples = 226
+
+def gimme_thread(model,columns):
 
     # import transcript table
     print('importing transcript table...')
@@ -112,27 +114,27 @@ def gimme_thread(columns):
 
 
 data = [
-    (numpy.linspace(0,13,14,dtype=int).tolist(),), 
-    (numpy.linspace(14,27,14,dtype=int).tolist(),),
-    (numpy.linspace(28,41,14,dtype=int).tolist(),),
-    (numpy.linspace(42,55,14,dtype=int).tolist(),),
-    (numpy.linspace(56,69,14,dtype=int).tolist(),),
-    (numpy.linspace(70,83,14,dtype=int).tolist(),),
-    (numpy.linspace(84,97,14,dtype=int).tolist(),),
-    (numpy.linspace(98,111,14,dtype=int).tolist(),),
-    (numpy.linspace(112,125,14,dtype=int).tolist(),),
-    (numpy.linspace(126,139,14,dtype=int).tolist(),),
-    (numpy.linspace(140,153,14,dtype=int).tolist(),),
-    (numpy.linspace(154,167,14,dtype=int).tolist(),),
-    (numpy.linspace(168,181,14,dtype=int).tolist(),),
-    (numpy.linspace(182,195,14,dtype=int).tolist(),),
-    (numpy.linspace(196,209,14,dtype=int).tolist(),),
-    (numpy.linspace(210,225,14,dtype=int).tolist(),)
+    (model,numpy.linspace(0,13,14,dtype=int).tolist(),), 
+    (model,numpy.linspace(14,27,14,dtype=int).tolist(),),
+    (model,numpy.linspace(28,41,14,dtype=int).tolist(),),
+    (model,numpy.linspace(42,55,14,dtype=int).tolist(),),
+    (model,numpy.linspace(56,69,14,dtype=int).tolist(),),
+    (model,numpy.linspace(70,83,14,dtype=int).tolist(),),
+    (model,numpy.linspace(84,97,14,dtype=int).tolist(),),
+    (model,numpy.linspace(98,111,14,dtype=int).tolist(),),
+    (model,numpy.linspace(112,125,14,dtype=int).tolist(),),
+    (model,numpy.linspace(126,139,14,dtype=int).tolist(),),
+    (model,numpy.linspace(140,153,14,dtype=int).tolist(),),
+    (model,numpy.linspace(154,167,14,dtype=int).tolist(),),
+    (model,numpy.linspace(168,181,14,dtype=int).tolist(),),
+    (model,numpy.linspace(182,195,14,dtype=int).tolist(),),
+    (model,numpy.linspace(196,209,14,dtype=int).tolist(),),
+    (model,numpy.linspace(210,225,14,dtype=int).tolist(),)
     ]
 
 def run_pool():
     p = Pool(16)
-    p.map(gimme_thread,data)
+    p.starmap(gimme_thread,data)
 
 
 if __name__ == "__main__":
