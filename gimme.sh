@@ -14,4 +14,4 @@ python3 -m venv env
 source env/bin/activate
 cd ibd
 
-python3 gimme_protect.py
+python3 gimme_threaded.py
