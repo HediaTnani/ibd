@@ -15,14 +15,14 @@ from gimme import gimme_mod
 
 
 # import human genome model
-# print('importing human genome model...')
+print('importing human genome model...')
 model = cobra.io.read_sbml_model('data/Human-GEM.xml')
 
 num_genes = len(model.genes)
 num_samples = 226
 
 # import transcript table
-# print('importing transcript table...')
+print('importing transcript table...')
 transcript_df = pandas.read_csv('../id_tpm.csv', index_col=0, header=0)
 # transcript_id = pandas.read_csv('../tpm_table.csv', index_col=0, header=0)
 
@@ -32,11 +32,11 @@ transcript_df = pandas.read_csv('../id_tpm.csv', index_col=0, header=0)
 # transcript_df.index = new_index
 
 # read in the metadata which contains sample IDs
-# print('importing patient metadata...')
+print('importing patient metadata...')
 metadata = pandas.read_csv('data/SraRunTable.txt', index_col=0, header=0)
 
 # transform the simulated counts using the rank-based approach
-# print('transforming simulated counts...')
+print('transforming simulated counts...')
 for sample,subdata in transcript_df.groupby(by=transcript_df.columns,axis=1):
     # within the sample, sort transcripts by counts
     transcripts_ranked = subdata[sample].sort_values()
@@ -53,7 +53,7 @@ for sample,subdata in transcript_df.groupby(by=transcript_df.columns,axis=1):
 
 # Now normalize each transcript by dividing by the max percentile-normalized
 # value for that transcript across all samples
-# print('normalizing transcripts...')
+print('normalizing transcripts...')
 transcript_df = transcript_df.div(transcript_df.max(axis=1), axis=0)
 transcript_df.fillna(0, inplace=True)
 # transcript_df.reindex(transcript_id.index)
@@ -62,7 +62,7 @@ transcript_df.fillna(0, inplace=True)
 
 
 # create the expression profile object using Driven
-# print('generating expression profile...')
+print('generating expression profile...')
 exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
                              conditions=transcript_df.columns.values,
                              expression=transcript_df.values)

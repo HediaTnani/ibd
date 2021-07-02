@@ -69,7 +69,7 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
     """
     with model:
 
-        # print('performing first optimization...')
+        print(str(condition)+': performing first optimization...')
 
         solution = model.slim_optimize() # returns the flux through the objective
         # print("1")
@@ -89,7 +89,7 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
         model.add_cons_vars(fix_obj_const)
         # print("4")
 
-        # print('generating coefficients...')
+        print(str(condition)+': generating coefficients...')
 
         coefficients = {rxn_id: cutoff - expression
                         for rxn_id, expression in iteritems(rxn_profile)
@@ -101,7 +101,7 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
             obj_vars.append((rxn.forward_variable, coefficient))
             obj_vars.append((rxn.reverse_variable, coefficient))
 
-        # print('adding penalties to reactions...')
+        print(str(condition)+': adding penalties to reactions...')
 
         # Add the max penalty to all reactions in the model
         # that are not already in the rxn_profile (e.g., no expression)
@@ -117,7 +117,7 @@ def gimme_mod(model, expression_profile, cutoff, fraction_of_optimum=0.9,
 
         # print(model.objective)
 
-        # print('performing second optimization...')
+        print(str(condition)+': performing second optimization...')
 
         sol = model.optimize()
 
