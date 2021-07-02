@@ -2,7 +2,7 @@ import cobra
 import numpy
 import pandas
 
-from multiprocessing import Process
+from multiprocessing import Pool
 
 from sympy import Min, Max, Add, Mul, Symbol
 from sympy.parsing.ast_parser import parse_expr
@@ -89,7 +89,7 @@ exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
 #     reaction.gene_reaction_rule = new_rule
 
 
-def gimme_thread(model,transcript_df,metadata,exp_prof,columns):
+def gimme_thread((model,transcript_df,metadata,exp_prof,columns)):
 
     gimme_solutions = {}
 
@@ -111,60 +111,84 @@ def gimme_thread(model,transcript_df,metadata,exp_prof,columns):
             gimme_solutions[sample] = gimme_solution
 
 
+data = ([model,transcript_df,metadata,exp_prof,numpy.linspace(0,13,14,dtype=int).tolist()], 
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(14,27,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(28,41,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(42,55,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(56,69,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(70,83,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(84,97,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(98,111,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(112,125,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(126,139,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(140,153,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(154,167,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(168,181,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(182,195,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(196,209,14,dtype=int).tolist()],
+    [model,transcript_df,metadata,exp_prof,numpy.linspace(210,225,14,dtype=int).tolist()]
+    )
+
+def run_pool():
+    p = Pool.(16)
+    p.map(gimme_thread,data)
+
+
 if __name__ == "__main__":
+    run_pool()
 
-    p1 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(0,13,14,dtype=int).tolist(),))
-    p2 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(14,27,14,dtype=int).tolist(),))
-    p3 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(28,41,14,dtype=int).tolist(),))
-    p4 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(42,55,14,dtype=int).tolist(),))
-    p5 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(56,69,14,dtype=int).tolist(),))
-    p6 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(70,83,14,dtype=int).tolist(),))
-    p7 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(84,97,14,dtype=int).tolist(),))
-    p8 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(98,111,14,dtype=int).tolist(),))
-    p9 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(112,125,14,dtype=int).tolist(),))
-    p10 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(126,139,14,dtype=int).tolist(),))
-    p11 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(140,153,14,dtype=int).tolist(),))
-    p12 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(154,167,14,dtype=int).tolist(),))
-    p13 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(168,181,14,dtype=int).tolist(),))
-    p14 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(182,195,14,dtype=int).tolist(),))
-    p15 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(196,209,14,dtype=int).tolist(),))
-    p16 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(210,225,14,dtype=int).tolist(),))
+    # p1 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(0,13,14,dtype=int).tolist(),))
+    # p2 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(14,27,14,dtype=int).tolist(),))
+    # p3 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(28,41,14,dtype=int).tolist(),))
+    # p4 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(42,55,14,dtype=int).tolist(),))
+    # p5 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(56,69,14,dtype=int).tolist(),))
+    # p6 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(70,83,14,dtype=int).tolist(),))
+    # p7 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(84,97,14,dtype=int).tolist(),))
+    # p8 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(98,111,14,dtype=int).tolist(),))
+    # p9 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(112,125,14,dtype=int).tolist(),))
+    # p10 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(126,139,14,dtype=int).tolist(),))
+    # p11 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(140,153,14,dtype=int).tolist(),))
+    # p12 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(154,167,14,dtype=int).tolist(),))
+    # p13 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(168,181,14,dtype=int).tolist(),))
+    # p14 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(182,195,14,dtype=int).tolist(),))
+    # p15 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(196,209,14,dtype=int).tolist(),))
+    # p16 = Process(target=gimme_thread, args=(model,transcript_df,metadata,exp_prof,numpy.linspace(210,225,14,dtype=int).tolist(),))
 
-    p1.start()
-    p2.start()
-    p3.start()
-    p4.start()
-    p5.start()
-    p6.start()
-    p7.start()
-    p8.start()
-    p9.start()
-    p10.start()
-    p11.start()
-    p12.start()
-    p13.start()
-    p14.start()
-    p15.start()
-    p16.start()
+    # p1.start()
+    # p2.start()
+    # p3.start()
+    # p4.start()
+    # p5.start()
+    # p6.start()
+    # p7.start()
+    # p8.start()
+    # p9.start()
+    # p10.start()
+    # p11.start()
+    # p12.start()
+    # p13.start()
+    # p14.start()
+    # p15.start()
+    # p16.start()
 
-    p1.join()
-    p2.join()
-    p3.join()
-    p4.join()
-    p5.join()
-    p6.join()
-    p7.join()
-    p8.join()
-    p9.join()
-    p10.join()
-    p11.join()
-    p12.join()
-    p13.join()
-    p14.join()
-    p15.join()
-    p16.join()
+    # p1.join()
+    # p2.join()
+    # p3.join()
+    # p4.join()
+    # p5.join()
+    # p6.join()
+    # p7.join()
+    # p8.join()
+    # p9.join()
+    # p10.join()
+    # p11.join()
+    # p12.join()
+    # p13.join()
+    # p14.join()
+    # p15.join()
+    # p16.join()
 
-    print("Done!")
+    # print("Done!")
 
 # write output to csv
 # print('writing fluxes to csv...')
