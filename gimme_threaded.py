@@ -14,11 +14,13 @@ from six import iteritems
 from gimme import gimme_mod
 
 
-
+def return_model():
+    model = cobra.io.read_sbml_model('data/Human-GEM.xml')
+    return model
 
 # import human genome model
 print('importing human genome model...')
-model = cobra.io.read_sbml_model('data/Human-GEM.xml')
+model = return_model()
 
 num_genes = len(model.genes)
 num_samples = 226
