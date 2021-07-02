@@ -2,7 +2,7 @@ import cobra
 import numpy
 import pandas
 
-from multiprocessing import Pool
+from pathos.multiprocessing import ProcessingPool as Pool
 
 from sympy import Min, Max, Add, Mul, Symbol
 from sympy.parsing.ast_parser import parse_expr
@@ -141,7 +141,7 @@ data = [
 
 def run_pool():
     p = Pool(16)
-    p.starmap(gimme_thread,data)
+    p.map(gimme_thread,data)
 
 
 if __name__ == "__main__":
