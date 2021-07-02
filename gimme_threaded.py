@@ -89,7 +89,7 @@ exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
 #     reaction.gene_reaction_rule = new_rule
 
 
-def gimme_thread((model,transcript_df,metadata,exp_prof,columns)):
+def gimme_thread(model,transcript_df,metadata,exp_prof,columns):
 
     gimme_solutions = {}
 
