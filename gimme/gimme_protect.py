@@ -16,14 +16,14 @@ from gimme import gimme_mod
 
 # import human genome model
 print('importing human genome model...')
-model = cobra.io.read_sbml_model('data/Human-GEM.xml')
+model = cobra.io.read_sbml_model('../data/Human-GEM.xml')
 
 num_genes = len(model.genes)
 num_samples = 226
 
 # import transcript table
 print('importing transcript table...')
-transcript_df = pandas.read_csv('../id_tpm.csv', index_col=0, header=0)
+transcript_df = pandas.read_csv('../../id_tpm.csv', index_col=0, header=0)
 # transcript_id = pandas.read_csv('../tpm_table.csv', index_col=0, header=0)
 
 # make sure the index is string, not int, for integration with GIMME
@@ -32,8 +32,8 @@ transcript_df = pandas.read_csv('../id_tpm.csv', index_col=0, header=0)
 # transcript_df.index = new_index
 
 # read in the metadata which contains sample IDs
-print('importing patient metadata...')
-metadata = pandas.read_csv('data/SraRunTable.txt', index_col=0, header=0)
+# print('importing patient metadata...')
+# metadata = pandas.read_csv('../data/SraRunTable.txt', index_col=0, header=0)
 
 # transform the simulated counts using the rank-based approach
 print('transforming simulated counts...')
@@ -88,7 +88,7 @@ exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
 #             new_rule += ' ' + entry
 #     reaction.gene_reaction_rule = new_rule
 
-gimme_solutions = {}
+# gimme_solutions = {}
 
 with model:
     for sample in transcript_df.columns:
@@ -100,12 +100,12 @@ with model:
                                                       fraction_of_optimum = 0.1,
                                                       max_penalty=1.0)
 
-        gimme_solution.fluxes.to_csv('data/fluxes/'+str(sample)+'.tsv', sep='\t')
-        with open('data/consistency.txt', 'a+') as consistency_scores:
+        gimme_solution.fluxes.to_csv('../data/fluxes/'+str(sample)+'.tsv', sep='\t')
+        with open('../data/consistency.txt', 'a+') as consistency_scores:
             consistency_scores.write(str(sample)+':\t'+str(gimme_solution.objective_value)+'\n')
         
         # print(coefficients)
-        gimme_solutions[sample] = gimme_solution
+        # gimme_solutions[sample] = gimme_solution
 
 
 # write output to csv

@@ -16,11 +16,11 @@ from gimme import gimme_mod
 
 # import human genome model
 print('importing human genome model...')
-model = cobra.io.read_sbml_model('data/Human-GEM.xml')
+model = cobra.io.read_sbml_model('../data/Human-GEM.xml')
 
 # import transcript table
 print('importing transcripts...')
-transcript_df = pandas.read_csv('../id_tpm.csv', index_col=0, header=0)
+transcript_df = pandas.read_csv('../../id_tpm.csv', index_col=0, header=0)
 # transcript_id = pandas.read_csv('../tpm_table.csv', index_col=0, header=0)
 
 # make sure the index is string, not int, for integration with GIMME
@@ -88,7 +88,7 @@ exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
 
 def gimme_thread(model,transcript_df,exp_prof,columns):
 
-    gimme_solutions = {}
+    # gimme_solutions = {}
 
     with model:
         for sample in transcript_df.columns[columns]:
@@ -100,12 +100,12 @@ def gimme_thread(model,transcript_df,exp_prof,columns):
                                                           fraction_of_optimum = 0.1,
                                                           max_penalty=1.0)
 
-            gimme_solution.fluxes.to_csv('data/fluxes/'+str(sample)+'.tsv', sep='\t')
-            with open('data/consistency.txt', 'a+') as consistency_scores:
+            gimme_solution.fluxes.to_csv('../data/fluxes/'+str(sample)+'.tsv', sep='\t')
+            with open('../data/consistency.txt', 'a+') as consistency_scores:
                 consistency_scores.write(str(sample)+':\t'+str(gimme_solution.objective_value)+'\n')
             
             # print(coefficients)
-            gimme_solutions[sample] = gimme_solution
+            # gimme_solutions[sample] = gimme_solution
 
 
 if __name__ == "__main__":
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     p15.join()
     p16.join()
 
-    print("Done!")
+    print("done!")
 
 # write output to csv
 # print('writing fluxes to csv...')
