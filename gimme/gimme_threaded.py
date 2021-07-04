@@ -102,7 +102,7 @@ def gimme_thread(model,transcript_df,exp_prof,columns):
 
             gimme_solution.fluxes.to_csv('../data/fluxes/'+str(sample)+'.tsv', sep='\t')
             with open('../data/consistency.txt', 'a+') as consistency_scores:
-                consistency_scores.write(str(sample)+':\t'+str(gimme_solution.objective_value)+'\n')
+                consistency_scores.write(str(sample)+'\t'+str(gimme_solution.objective_value)+'\n')
             
             # print(coefficients)
             # gimme_solutions[sample] = gimme_solution

@@ -31,6 +31,8 @@ reduced_id <- merge(df_row, ttg_id, all.x=TRUE)
 
 tsv_df <- data.frame(matrix(ncol=226, nrow=199240, dimnames=list(row, col)))
 
+## transcript-level tpm table
+
 count = 1
 for (abundance in abundances_tsv) {
   tsv_df[count] <- read.csv(abundance, sep = "\t")$tpm
@@ -39,9 +41,9 @@ for (abundance in abundances_tsv) {
 
 transcript_df <- tsv_df
 
-# write.csv(transcript_df, "../transcript_tpm.csv")
+write.csv(transcript_df, "../transcript_tpm.csv")
 
-## convert transcript id to gene id
+## convert transcript id to gene id and aggregate
 
 id_df <- tsv_df
 id_df$id <- sub("*\\.[0-9]", "", reduced_id$id)
@@ -61,5 +63,5 @@ tsv_df <- select(tsv_df, all_of(col))
 
 gene_df <- tsv_df
 
-# write.csv(gene_df, "../gene_tpm.csv")
+write.csv(gene_df, "../gene_tpm.csv")
 

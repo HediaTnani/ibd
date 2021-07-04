@@ -77,6 +77,16 @@ res <- results(dds, tidy=TRUE)
 # names(gts) <- c("row", "symbol")
 # res_m <- distinct(merge(res, gts, all.x=TRUE))
 
+top_res <- as.data.frame(res$row)
+colnames(top_res) <- c("row")
+top_res$padj <- -log10(res$padj)
+top_res$log <- res$log2FoldChange
+top_res <- filter(top_res, padj >= 30 & (log >= 4 | log <= -4))
+top_res <- as.data.frame(top_res$row[rev(order(abs(top_res$log)))])
+colnames(top_res) <- c("row")
+labels <- as.vector(top_res[seq(1, nrow(top_res), 4), ])
+# labels <- as.vector(top_res$row[1:20])
+
 # export deseq2 results
 
 write.csv(res, "data/protect_results/deseq2_gene.csv")
@@ -154,7 +164,8 @@ volcano <- ggplot(volcano_data, aes(x=log2FoldChange, y=-log10(padj), color = Le
 
 volcano + 
   geom_point(aes(alpha = 0.5)) +
-  geom_text(aes(label = ifelse(Legend == "significant positive" | Legend == "significant negative", row, '')), hjust = 0, vjust = 0) +
+  # geom_text(aes(label = ifelse(Legend == "significant positive" | Legend == "significant negative", row, '')), hjust = 0, vjust = 0) +
+  geom_text(aes(label = ifelse(row %in% labels, row, '')), hjust = 0, vjust = 0) +
   geom_vline(xintercept = -4, linetype="dashed", size = 0.3) + 
   geom_vline(xintercept = 4, linetype="dashed", size = 0.3) + 
   geom_hline(yintercept = 30, linetype="dashed", size = 0.3) + 
