@@ -1,0 +1,81 @@
+,row,include,type
+1,TBC1D3,yes,"gtpase activation, cancer"
+2,TBC1D3K,yes,gtpase activation
+3,DEFB4B,yes,antibiotic peptide (inflammation)
+4,SERPINB3,yes,"endopeptidase inhibitor, innate immunity"
+5,DEFB4A,tes,antibiotic peptide (inflammation)
+6,SERPINB4,yes,"protease inhibitor, autoantigen in chronic inflammation"
+7,SAA1,yes,inflammation respnse
+8,SPRR1B,no,keratinocyte envelope protein
+9,REG1A,no,"diabetogenesis, islet cell regeneration"
+10,S100A12,yes,"leukocyte recruitment, promotion of cytokine and chemokine production"
+11,PROK2,yes,expressed in SCN circadian clock
+12,SAA2-SAA4,yes,inflammatory bowel disease
+13,AQP9,yes,"aquaporins, hepatic and leukocyte function"
+14,SAA4,yes,selenium micronutrient network
+15,SERPINB7,no,protease inhibitor
+16,S100A8,yes,neutrophil chemotaxis/adhesion
+17,MCEMP1,yes,mast cell differentiation
+18,CXCL17,yes,"dendritic cell + monocyte recruitment, antimicrobial activity against E. coli, S. aureus, Salmonella, P. aeruginosa, and C. albicans"
+19,CSF3,yes,encodes an IL-6 cytokine that regulates granulocytes
+20,CXCR1,yes,"G-protein-coupled receptor protein, binds to IL-8"
+21,MMP3,no,degrades various ECM types
+22,CHI3L1,no,chitinase
+23,DUOXA2,yes,thyroid hormone synthesis
+24,REG1B,no,"diabetogenesis, islet cell regeneration"
+25,HCAR3,yes,regulates adipocyte lipolysis
+26,WNT2,yes,"oncogenesis, cell proliferation"
+27,TCN1,yes,"vitamin B-12 binding protein, constituent of secondary granules in neutrophils"
+28,IL17A,yes,proinflammatory cytokine IL-17 receptor family
+29,REG3A,yes,"antimicrobial activity, cell proliferation/differentiation"
+30,MMP10,yes,deficiency associated with colitis
+31,SAA2,yes,"inflammation, hdl metabolism, cholesterol homeostasis, antimicrobial activity"
+32,MMP7,no,degrades various ECM types
+33,TNIP3,yes,"protein metabolism, IL-23 signaling pathway"
+34,FCGR3B,yes,IgG receptor Fc region
+35,IGHG3,yes,"C4, C2 activator, IL-4 signaling"
+36,HCAR2,yes,"G-protein-coupled receptor protein, nicotinic acid receptor activity"
+37,CXCL5,yes,"chemokine, neutrophil recruitment, angiogenesis"
+38,KRT6B,no,keratin
+39,TREM1,yes,"amplifies neutrophil, monocyte inflammatory responses"
+40,FPR2,yes,neutrophil chemotactic factor
+41,ABCA12,no,molecule transporter
+42,S100A9,yes,"antimicrobial activity, promote neutrophil phagocytosis"
+43,MMP1,no,degrades various ECM types
+44,KCNJ15,no,potassium channel
+45,TNFRSF6B,no,regulate cell death
+46,SLC6A14,yes,"sodium, chloride dependent neurotransmitter transporters"
+47,LILRA3,yes,"immunoreceptors expressed in monocytes and B cells, MHC antigen receptor"
+48,OSM,yes,cytokine regulator
+49,CXCR2,yes,binds IL-8 to activate neutrophils
+50,DUOX2,yes,"ROS production, thyroid hormone synthesis"
+51,CLDN2,yes,integral proteins localized at tight junctions (intestine)
+52,VSIG1,no,JAM protein
+53,FPR1,yes,"neutrophil chemotactic factor, TAFA4 receptor to increase ROS release"
+54,CD300E,no,immune receptor
+55,IL13RA2,no,internalization of IL-13
+56,CXCL8,yes,"attracts neutrophils, basophils, T-cells, but not monocytes"
+57,IL26,yes,local mechanisms of mucosal immunity
+58,IGHG1,no,Ig heavy chain constant region
+59,PLA2G3,yes,lipid metabolism
+60,C4BPA,yes,controls classical pathway of complement activation
+61,FCN3,yes,complement pathway through lectin pathway
+62,DMBT1,no,candidate tumor supressor gene
+63,IGHGP,no,pseudogene Ig heavy chain
+64,SELE,yes,mediate adhesion of blood leukocytes to vascular lining
+65,IGHV1-24,yes,Ig heavy chain variable region
+66,IGKV2D-40,yes,Ig heavy chain variable region
+67,LCNL1,no,small molecule binding
+68,CCN4,no,"Wnt signaling, apoptosis"
+69,IDO1,yes,"tryptophan catabolsism in dendritic cells, monocytes, macrophages"
+70,PI3,yes,"elastase-specific inhibtor, antimicrobial peptide against bacteria"
+71,CSF3R,yes,"neutrophilic proliferation, differentiation, survival"
+72,INHBA,no,transforming growth factor protein
+73,C4BPB,yes,controls classical pathway of complement activation
+74,CXCL1,yes,"G-protein-coupled receptor protein, inflammation"
+75,BMP3,no,regulates bone density
+76,ADGRG3,yes,"G-protein-coupled receptor protein, innate immunity"
+77,FER1L4,no,pseudogene
+78,CYP3A4,yes,"monooxygenase, drug metabolism, cholesterol/steroid/lipid synthesis"
+79,NFE2,no,hematopoietic stem cell differentiation
+80,FCAR,yes,receptor for IgA Fc region 
