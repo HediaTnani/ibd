@@ -3,10 +3,10 @@ library(tximport)
 library(DESeq2)
 library("sleuth")
 library(annotables)
-library(biomaRt)
 library(dplyr)
 library(ggplot2)
 library(vegan)
+library(pheatmap)
 
 ## import data
 
@@ -21,56 +21,25 @@ abundances_h5 <- file.path(tsv_subfolders, "abundance.h5")
 
 metadata <- mutate(metadata, path = abundances_h5)
 
-# ensembl <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", host = "ensembl.org")
-# datasets <- listDatasets(ensembl)
-
-# mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", host = "ensembl.org")
-# ttg <- getBM(attributes = c("ensembl_transcript_id", "transcript_version", "ensembl_gene_id", "external_gene_name", "description", "transcript_biotype"), mart = mart)
-# ttg <- rename(ttg, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
-# ttg <- select(ttg, c("target_id", "ens_gene", "ext_gene"))
-
 ttg <- read.table("data/tx2gene.txt", sep = "\t", col.names = c("target_id", "ens_gene", "ext_gene"))
 
 ## tximport for deseq2
 
 names(abundances_h5) <- metadata$sample
-txi.kallisto <- tximport(abundances_h5, type = "kallisto", tx2gene = ttg, txOut = TRUE)
-txi.sum <- summarizeToGene(txi.kallisto, tx2gene = select(ttg, c("target_id", "ext_gene")))
+txi_kallisto <- tximport(abundances_h5, type = "kallisto", tx2gene = ttg, txOut = TRUE)
+txi_sum <- summarizeToGene(txi_kallisto, tx2gene = select(ttg, c("target_id", "ext_gene")))
 
-## statistical analysis
-
-# hierarchical clustering
-
-# outlier samples?? maybe toss bad outliers
-# check with PCA, check number of reads/samples with that sample
-
-
-gene_df <- as.data.frame(txi.sum$abundance)
-
-dist <- vegdist(t(gene_df), method = "bray")
-anova <- anova(betadisper(dist, metadata$Diagnosis))
-clus <- hclust(dist, "single",)
-plot(clus)
-
-# permanova distances
-# deseq finds simple differences, while adonis looks for multivariate differences (differences in genes rely on each other)
-# adonis coefficients??
-# make captions for all figures, methods for figure generation
-
-
-permanova <- adonis(t(gene_df) ~ Diagnosis, data = metadata, method = "bray", permutations = 99)
-print(as.data.frame(permanova$aov.tab)["Diagnosis", "Pr(>F)"])
 
 coef <- coefficients(permanova)["Diagnosis1",]
-top.coef <- coef[rev(order(abs(coef)))[1:20]]
+top_coef <- coef[rev(order(abs(coef)))[1:20]]
 par(mar = c(3, 14, 2, 1))
 barplot(sort(top.coef), horiz = T, las = 1, main = "Top Genes")
 
 ## deseq2 analysis
 
 sampleTable <- data.frame(condition = factor(metadata$Diagnosis))
-rownames(sampleTable) <- colnames(txi.sum$counts) 
-dds <- DESeqDataSetFromTximport(txi.sum, sampleTable, ~condition)
+rownames(sampleTable) <- colnames(txi_sum$counts) 
+dds <- DESeqDataSetFromTximport(txi_sum, sampleTable, ~condition)
 dds <- DESeq(dds) 
 res <- results(dds, tidy=TRUE)
 # gts <- select(ttg, "ens_gene", "ext_gene")
@@ -84,39 +53,15 @@ top_res$log <- res$log2FoldChange
 top_res <- filter(top_res, padj >= 30 & (log >= 4 | log <= -4))
 top_res <- as.data.frame(top_res$row[rev(order(abs(top_res$log)))])
 colnames(top_res) <- c("row")
-labels <- as.vector(top_res[seq(1, nrow(top_res), 4), ])
+labels <- as.vector(top_res[seq(1, nrow(top_res), 1), ])
 # labels <- as.vector(top_res$row[1:20])
+
+# write.csv(top_res, "data/protect_results/deseq2_differential.csv")
 
 # export deseq2 results
 
-write.csv(res, "data/protect_results/deseq2_gene.csv")
+# write.csv(res, "data/protect_results/deseq2_gene.csv")
 
-## sleuth analysis
-
-so <- sleuth_prep(metadata, target_mapping = ttg, aggregation_column = "ens_gene", extra_bootstrap_summary = TRUE, transformation_function = function(x) log2(x + 0.5), gene_mode = TRUE)
-
-so <- sleuth_fit(so, ~sex, 'reduced')
-so <- sleuth_fit(so, ~sex + Diagnosis, 'full')
-
-so <- sleuth_lrt(so, 'reduced', 'full')
-sleuth_table_lrt <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
-#sleuth_table_lrt <- filter(sleuth_table_lrt, qval <= 0.05)
-
-so$pval_aggregate <- FALSE
-
-so <- sleuth_wt(so, 'DiagnosisUlcerative Colitis', 'full')
-so <- sleuth_wt(so, 'sexmale', 'full')
-sleuth_table_wt <- sleuth_results(so, 'DiagnosisUlcerative Colitis', test_type = 'wt', which_model = 'full', show_all = FALSE)
-#sleuth_table_wt <- filter(sleuth_table_wt, qval <= 0.05)
-
-so$pval_aggregate <- TRUE
-
-sleuth_live(so)
-
-# export sleuth results
-
-write.csv(sleuth_table_lrt, "data/protect_results/sleuth_lrt.csv")
-write.csv(sleuth_table_wt, "data/protect_results/sleuth_wt.csv")
 
 ## figure generation
 
@@ -176,6 +121,52 @@ volcano +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
   theme(legend.position = "none")
 
+# deseq2 pca plot
+
+rld <- vst(dds, blind=TRUE)
+pca <- plotPCA(rld, intgroup="condition")
+pca +
+  ggtitle("Principal Component Analysis (DESeq2)") + 
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+
+# deseq2 heatmap
+
+rld_mat <- assay(rld)
+rld_cor <- cor(rld_mat)
+pheatmap(
+  mat = rld_cor, 
+  main = "Correlation Heatmap"
+  )
+
+
+## sleuth analysis
+
+so <- sleuth_prep(metadata, target_mapping = ttg, aggregation_column = "ens_gene", extra_bootstrap_summary = TRUE, transformation_function = function(x) log2(x + 0.5), gene_mode = TRUE)
+
+so <- sleuth_fit(so, ~sex, 'reduced')
+so <- sleuth_fit(so, ~sex + Diagnosis, 'full')
+
+so <- sleuth_lrt(so, 'reduced', 'full')
+sleuth_table_lrt <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
+#sleuth_table_lrt <- filter(sleuth_table_lrt, qval <= 0.05)
+
+so$pval_aggregate <- FALSE
+
+so <- sleuth_wt(so, 'DiagnosisUlcerative Colitis', 'full')
+so <- sleuth_wt(so, 'sexmale', 'full')
+sleuth_table_wt <- sleuth_results(so, 'DiagnosisUlcerative Colitis', test_type = 'wt', which_model = 'full', show_all = FALSE)
+#sleuth_table_wt <- filter(sleuth_table_wt, qval <= 0.05)
+
+so$pval_aggregate <- TRUE
+
+# sleuth_live(so)
+
+# export sleuth results
+
+write.csv(sleuth_table_lrt, "data/protect_results/sleuth_lrt.csv")
+write.csv(sleuth_table_wt, "data/protect_results/sleuth_wt.csv")
+
 # sleuth volcano plot
 
 volcano_data <-  select(sleuth_table_wt, c("ext_gene","qval", "b"))
@@ -229,14 +220,14 @@ volcano +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
   theme(legend.position = "none")
 
-# pca plots
+# sleuth pca plot
 
 pca_tpm <- plot_pca(so, units = "tpm", color_by = 'Diagnosis', point_alpha = 0.5)
 
 pca_tpm +
   ggtitle("Principal Component Analysis (TPM)") + 
-  xlab("PC1 (62.162%)") + 
-  ylab("PC2 (26.471%)") +
+  xlab("PC1 (62.127%)") + 
+  ylab("PC2 (26.475%)") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
 
@@ -250,8 +241,8 @@ pca_counts +
   xlab("PC1 (62.27%)") + 
   ylab("PC2 (17.34%)") +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
-  stat_ellipse(aes(x = pca_counts$data$PC1, y = pca_counts$data$PC2), type = "t", level = 0.95, linetype = "dashed", size = 0.3)
+  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+  # stat_ellipse(aes(x = pca_counts$data$PC1, y = pca_counts$data$PC2), type = "t", level = 0.95, linetype = "dashed", size = 0.3)
 
 # pca variances plots
 

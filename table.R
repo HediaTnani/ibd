@@ -22,8 +22,8 @@ ttg_name <- select(ttg, c("target_id", "ext_gene"))
 ttg_id <- select(ttg, c("target_id", "ens_gene"))
 
 names(ttg_name) <- c("row", "symbol")
-ttg_name$symbol[[187688]] <- "5-nucleotidase"
-ttg_name$symbol[[187461]] <- "Wilms"
+# ttg_name$symbol[[187688]] <- "5-nucleotidase"
+# ttg_name$symbol[[187461]] <- "Wilms"
 reduced_gene <- merge(df_row, ttg_name, all.x=TRUE)  
 
 names(ttg_id) <- c("row", "id")
@@ -41,7 +41,7 @@ for (abundance in abundances_tsv) {
 
 transcript_df <- tsv_df
 
-write.csv(transcript_df, "../transcript_tpm.csv")
+# write.csv(transcript_df, "../transcript_tpm.csv")
 
 ## convert transcript id to gene id and aggregate
 
@@ -52,7 +52,7 @@ id_df <- aggregate(id_df[,sapply(id_df,is.numeric)], id_df["id"], sum)
 row.names(id_df) <- id_df$id
 id_df <- select(id_df, all_of(col))
 
-write.csv(id_df, "../id_tpm.csv")
+# write.csv(id_df, "../id_tpm.csv")
 
 ## aggregate tpm table to gene-level
 
@@ -63,5 +63,30 @@ tsv_df <- select(tsv_df, all_of(col))
 
 gene_df <- tsv_df
 
-write.csv(gene_df, "../gene_tpm.csv")
+# write.csv(gene_df, "../gene_tpm.csv")
+
+
+## statistical analysis
+
+# hierarchical clustering
+
+# outlier samples?? maybe toss bad outliers
+# check with PCA, check number of reads/samples with that sample
+
+
+gene_df <- as.data.frame(txi.sum$abundance)
+
+dist <- vegdist(t(gene_df), method = "bray")
+anova <- anova(betadisper(dist, metadata$Diagnosis))
+clus <- hclust(dist, "single",)
+plot(clus)
+
+# permanova distances
+# deseq finds simple differences, while adonis looks for multivariate differences (differences in genes rely on each other)
+# adonis coefficients??
+# make captions for all figures, methods for figure generation
+
+
+permanova <- adonis(t(gene_df) ~ Diagnosis, data = metadata, method = "bray", permutations = 99)
+print(as.data.frame(permanova$aov.tab)["Diagnosis", "Pr(>F)"])
 
