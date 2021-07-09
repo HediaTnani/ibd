@@ -92,17 +92,19 @@ exp_prof = ExpressionProfile(identifiers=transcript_df.index.values,
 
 with model:
     for sample in transcript_df.columns:
-        print('calling gimme on '+str(sample)+'...')
-        constrained_model,gimme_solution,condition = gimme_mod(model,
-                                                      exp_prof,
-                                                      condition=sample,
-                                                      cutoff = 1.0,
-                                                      fraction_of_optimum = 0.1,
-                                                      max_penalty=1.0)
-
-        gimme_solution.fluxes.to_csv('../data/fluxes/'+str(sample)+'.tsv', sep='\t')
-        with open('../data/consistency.txt', 'a+') as consistency_scores:
-            consistency_scores.write(str(sample)+'\t'+str(gimme_solution.objective_value)+'\n')
+        if sample == 'SRR6467772' or sample == 'SRR6467765':
+            print('calling gimme on '+str(sample)+'...')
+            constrained_model,gimme_solution,condition = gimme_mod(model,
+                                                          exp_prof,
+                                                          condition=sample,
+                                                          cutoff = 1.0,
+                                                          fraction_of_optimum = 0.1,
+                                                          max_penalty=1.0)
+    
+            gimme_solution.fluxes.to_csv('../data/fluxes/'+str(sample)+'.tsv', sep='\t')
+            with open('../data/consistency.txt', 'a+') as consistency_scores:
+                consistency_scores.write(str(sample)+'\t'+str(gimme_solution.objective_value)+'\n')
+            
         
         # print(coefficients)
         # gimme_solutions[sample] = gimme_solution
