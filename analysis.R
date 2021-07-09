@@ -29,12 +29,6 @@ names(abundances_h5) <- metadata$sample
 txi_kallisto <- tximport(abundances_h5, type = "kallisto", tx2gene = ttg, txOut = TRUE)
 txi_sum <- summarizeToGene(txi_kallisto, tx2gene = select(ttg, c("target_id", "ext_gene")))
 
-
-coef <- coefficients(permanova)["Diagnosis1",]
-top_coef <- coef[rev(order(abs(coef)))[1:20]]
-par(mar = c(3, 14, 2, 1))
-barplot(sort(top.coef), horiz = T, las = 1, main = "Top Genes")
-
 ## deseq2 analysis
 
 sampleTable <- data.frame(condition = factor(metadata$Diagnosis))

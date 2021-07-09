@@ -74,7 +74,7 @@ gene_df <- tsv_df
 # check with PCA, check number of reads/samples with that sample
 
 
-gene_df <- as.data.frame(txi.sum$abundance)
+gene_df <- as.data.frame(txi_sum$abundance)
 
 dist <- vegdist(t(gene_df), method = "bray")
 anova <- anova(betadisper(dist, metadata$Diagnosis))
@@ -90,3 +90,7 @@ plot(clus)
 permanova <- adonis(t(gene_df) ~ Diagnosis, data = metadata, method = "bray", permutations = 99)
 print(as.data.frame(permanova$aov.tab)["Diagnosis", "Pr(>F)"])
 
+coef <- coefficients(permanova)["Diagnosis1",]
+top_coef <- coef[rev(order(abs(coef)))[1:20]]
+par(mar = c(3, 14, 2, 1))
+barplot(sort(top_coef), horiz = T, las = 1, main = "Most Differential Genes")
