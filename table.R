@@ -94,3 +94,22 @@ coef <- coefficients(permanova)["Diagnosis1",]
 top_coef <- coef[rev(order(abs(coef)))[1:20]]
 par(mar = c(3, 14, 2, 1))
 barplot(sort(top_coef), horiz = T, las = 1, main = "Most Differential Genes")
+
+bar_data <- as.data.frame(sort(top_coef))
+colnames(bar_data) <- "value"
+bar_data$labels <- row.names(bar_data)
+
+barplot <- ggplot(data = bar_data, aes(x = reorder(labels, value), y = value, fill = value < 0))
+
+barplot +
+  coord_flip() +
+  geom_bar(stat="identity") +
+  # scale_fill_brewer(palette="Blues") +
+  xlab("Gene ID") + 
+  ylab("PERMANOVA Linear Model Coefficient") +
+  ggtitle("Most Differentially Expressed Genes (Multivariate)") + 
+  theme_minimal() +
+  theme(legend.position = "none", text = element_text(family = "Helvetica Neue"))
+
+ggsave(filename = "permanova_barplot.png", path = "data/figures/", width = 8, height = 6, device='png', dpi=700)
+

@@ -47,8 +47,11 @@ top_res$log <- res$log2FoldChange
 top_res <- filter(top_res, padj >= 30 & (log >= 4 | log <= -4))
 top_res <- as.data.frame(top_res$row[rev(order(abs(top_res$log)))])
 colnames(top_res) <- c("row")
-labels <- as.vector(top_res[seq(1, nrow(top_res), 1), ])
+# labels <- as.vector(top_res[seq(1, nrow(top_res), 1), ])
 # labels <- as.vector(top_res$row[1:20])
+labels <- read.csv("data/protect_results/volcano_labels.csv")
+labels <- as.vector(c("DUOXA2","SAA1","DUOX2","MMP10","CXCR1","DEFB4B","SERPINB4","CXCL5","CXCL17","MMP10","TREM1","BMP3","CYP3A4"))
+
 
 # write.csv(top_res, "data/protect_results/deseq2_differential.csv")
 
@@ -102,18 +105,25 @@ volcano_data$Legend <- as.factor(volcano_data$Legend)
 volcano <- ggplot(volcano_data, aes(x=log2FoldChange, y=-log10(padj), color = Legend))
 
 volcano + 
-  geom_point(aes(alpha = 0.5)) +
+  geom_point(alpha = 0.5) +
   # geom_text(aes(label = ifelse(Legend == "significant positive" | Legend == "significant negative", row, '')), hjust = 0, vjust = 0) +
-  geom_text(aes(label = ifelse(row %in% labels, row, '')), hjust = 0, vjust = 0) +
+  geom_text(aes(label = ifelse(row %in% labels, row, '')), hjust = 0, vjust = 0,show.legend = FALSE,colour = "black") +
   geom_vline(xintercept = -4, linetype="dashed", size = 0.3) + 
   geom_vline(xintercept = 4, linetype="dashed", size = 0.3) + 
   geom_hline(yintercept = 30, linetype="dashed", size = 0.3) + 
-  ggtitle("Volcano Plot (DESeq2)") + 
+  ggtitle("Wald Test") + 
   xlab(expression(paste(log[2], "(Fold Change)"))) + 
   ylab(expression(paste(-log[10], "(Q-value)"))) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
-  theme(legend.position = "none")
+  theme(text = element_text(family = "Helvetica Neue"))+
+  theme(legend.position = "none") +
+  theme(legend.background = element_rect(fill="white",
+                                         size=0.2, linetype="solid", 
+                                         colour ="black")) +
+  scale_color_discrete(name = "Significance",labels = c("", "", "","Down in IBD", "", "Up in IBD"))
+
+ggsave(filename = "deseq2_volcano.png", path = "data/figures/", width = 8, height = 6, device='png', dpi=1000)
 
 # deseq2 pca plot
 
@@ -158,8 +168,8 @@ so$pval_aggregate <- TRUE
 
 # export sleuth results
 
-write.csv(sleuth_table_lrt, "data/protect_results/sleuth_lrt.csv")
-write.csv(sleuth_table_wt, "data/protect_results/sleuth_wt.csv")
+# write.csv(sleuth_table_lrt, "data/protect_results/sleuth_lrt.csv")
+# write.csv(sleuth_table_wt, "data/protect_results/sleuth_wt.csv")
 
 # sleuth volcano plot
 
